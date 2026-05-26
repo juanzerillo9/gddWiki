@@ -17,7 +17,11 @@ export function TopBar({ onMenuClick, gameSlug }: TopBarProps) {
   const { theme, toggleTheme } = useTheme()
 
   async function handleLogout() {
-    await logout.mutateAsync()
+    try {
+      await logout.mutateAsync()
+    } catch {
+      // ignorar error — igual redirigimos a login
+    }
     navigate('/login')
   }
 

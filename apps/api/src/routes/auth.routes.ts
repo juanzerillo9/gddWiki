@@ -45,16 +45,12 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
   })
 
   // POST /api/auth/logout
-  fastify.post(
-    '/auth/logout',
-    { preHandler: [fastify.requireAuth] },
-    async (_request, reply) => {
-      void reply
-        .clearCookie(config.SESSION_COOKIE_NAME, { path: '/' })
-        .status(200)
-        .send({ ok: true })
-    },
-  )
+  fastify.post('/auth/logout', async (_request, reply) => {
+    void reply
+      .clearCookie(config.SESSION_COOKIE_NAME, { path: '/' })
+      .status(200)
+      .send({ ok: true })
+  })
 
   // GET /api/auth/me
   fastify.get(
