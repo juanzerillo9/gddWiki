@@ -1,5 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { LandingRoute } from './routes/LandingRoute'
 import { LoginRoute } from './routes/LoginRoute'
+import { RegisterRoute } from './routes/RegisterRoute'
 import { GamesRoute } from './routes/GamesRoute'
 import { GameRoute } from './routes/GameRoute'
 import { PageRoute } from './routes/PageRoute'
@@ -10,11 +12,19 @@ import { AuthGuard } from './components/layout/AuthGuard'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
+    path: '/',
+    element: <LandingRoute />,
+  },
+  {
     path: '/login',
     element: <LoginRoute />,
   },
   {
-    path: '/',
+    path: '/register',
+    element: <RegisterRoute />,
+  },
+  {
+    path: '/games',
     element: <AuthGuard />,
     children: [
       {
@@ -22,19 +32,19 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
         element: <GamesRoute />,
       },
       {
-        path: 'games/:gameSlug',
+        path: ':gameSlug',
         element: <GameRoute />,
       },
       {
-        path: 'games/:gameSlug/pages/:pageSlug',
+        path: ':gameSlug/pages/:pageSlug',
         element: <PageRoute />,
       },
       {
-        path: 'games/:gameSlug/search',
+        path: ':gameSlug/search',
         element: <SearchRoute />,
       },
       {
-        path: 'games/:gameSlug/versions',
+        path: ':gameSlug/versions',
         element: <VersionsRoute />,
       },
     ],

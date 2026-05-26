@@ -19,7 +19,7 @@ export function GameRoute() {
   }
 
   if (error || !gameData?.game) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/games" replace />
   }
 
   const game = gameData.game

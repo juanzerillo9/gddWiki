@@ -36,8 +36,8 @@ export function TopBar({ onMenuClick, gameSlug }: TopBarProps) {
         </button>
 
         {/* Breadcrumb */}
-        <Link to="/" className="text-sm font-semibold text-brand-600 hover:text-brand-700">
-          WikiGDD
+        <Link to="/games" className="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          botaholik
         </Link>
         {gameData?.game && (
           <>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from './client'
-import type { UserResponse, LoginBody } from '@wikigdd/shared'
+import type { UserResponse, LoginBody, RegisterBody } from '@wikigdd/shared'
 
 export function useCurrentUser() {
   return useQuery({
@@ -16,6 +16,15 @@ export function useLogin() {
   return useMutation({
     mutationFn: (body: LoginBody) =>
       apiClient.post<{ user: UserResponse }>('/auth/login', body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['currentUser'] }),
+  })
+}
+
+export function useRegister() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: RegisterBody) =>
+      apiClient.post<{ user: UserResponse }>('/auth/register', body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['currentUser'] }),
   })
 }
