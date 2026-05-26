@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// USUARIOS
+// ─────────────────────────────────────────────
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  games        Game[]
+}
+
+// ─────────────────────────────────────────────
+// JUEGOS (= wikis / proyectos)
+// ─────────────────────────────────────────────
+enum ProjectType {
+  videogame
+  tabletop
+  app
+  novel
+  worldbuilding
+}
+
+model Game {
+  id          String      @id @default(cuid())
+  ownerId     String
+  owner       User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  title       String
+  slug        String      @unique
+  description String?
+  coverImage  String?
+  isPublic    Boolean     @default(false)
+  projectType ProjectType @default(videogame)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  pages       Page[]
+  media       Media[]
+  versions    GameVersion[]
+
+  @@index([ownerId])
+}
+
+// ─────────────────────────────────────────────
+// PÁGINAS (docs + entidades + secciones)
+// ─────────────────────────────────────────────
+enum PageType {
+  doc
+  section
+  character
+  item
+  enemy
+  level
+  mechanic
+}
+
+model Page {
+  id          String    @id @default(cuid())
+  gameId      String
+  game        Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  parentId    String?
+  parent      Page?     @relation("PageHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Page[]    @relation("PageHierarchy")
+
+  type        PageType  @default(doc)
+  title       String
+  slug        String
+  icon        String?
+
+  content     Json      @default("{}")
+  attributes  Json      @default("{}")
+  plainText   String    @default("")
+
+  orderIndex  Int       @default(0)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  media         Media[]
+  outgoingLinks PageLink[] @relation("LinkSource")
+  incomingLinks PageLink[] @relation("LinkTarget")
+
+  @@unique([gameId, slug])
+  @@index([gameId])
+  @@index([parentId])
+  @@index([gameId, type])
+}
+
+// ─────────────────────────────────────────────
+// ENLACES INTERNOS ENTRE PÁGINAS
+// ─────────────────────────────────────────────
+model PageLink {
+  id            String  @id @default(cuid())
+  sourcePageId  String
+  source        Page    @relation("LinkSource", fields: [sourcePageId], references: [id], onDelete: Cascade)
+  targetPageId  String
+  target        Page    @relation("LinkTarget", fields: [targetPageId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+
+  @@unique([sourcePageId, targetPageId])
+  @@index([targetPageId])
+}
+
+// ─────────────────────────────────────────────
+// MEDIA (imágenes, sprites, gifs)
+// ─────────────────────────────────────────────
+enum MediaKind {
+  image
+  sprite
+  gif
+}
+
+model Media {
+  id         String    @id @default(cuid())
+  gameId     String
+  game       Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  pageId     String?
+  page       Page?     @relation(fields: [pageId], references: [id], onDelete: SetNull)
+
+  url        String
+  fileName   String
+  mimeType   String
+  sizeBytes  Int
+  width      Int?
+  height     Int?
+  kind       MediaKind @default(image)
+
+  createdAt  DateTime  @default(now())
+
+  @@index([gameId])
+  @@index([pageId])
+}
+
+// ─────────────────────────────────────────────
+// VERSIONES DEL JUEGO (snapshots/milestones)
+// ─────────────────────────────────────────────
+model GameVersion {
+  id           String   @id @default(cuid())
+  gameId       String
+  game         Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  versionLabel String
+  notes        String?
+  snapshot     Json
+
+  createdAt    DateTime @default(now())
+
+  @@index([gameId])
+}

@@ -1,0 +1,20 @@
+{$DOMAIN} {
+    encode gzip
+
+    # Media files served directly from the volume for performance
+    handle /wiki/media/* {
+        root * /srv
+        uri strip_prefix /wiki
+        file_server
+    }
+
+    # All API and app routes go to Fastify
+    handle /wiki/* {
+        reverse_proxy api:3000
+    }
+
+    # SPA frontend
+    handle {
+        reverse_proxy web:80
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "./dist-seed",
+    "rootDir": "./prisma",
+    "paths": {
+      "@wikigdd/shared": ["../../packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["prisma"],
+  "exclude": ["node_modules", "dist"]
+}
