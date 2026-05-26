@@ -1,9 +1,10 @@
 {
   "name": "@wikigdd/shared",
   "version": "0.1.0",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "types": "./src/index.ts",
   "scripts": {
+    "build": "tsc -p tsconfig.cjs.json",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

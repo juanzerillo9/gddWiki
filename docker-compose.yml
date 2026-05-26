@@ -30,7 +30,7 @@ services:
     volumes:
       - uploads:/data/uploads
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/wiki/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/wiki/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -51,6 +51,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - uploads:/srv/media:ro
